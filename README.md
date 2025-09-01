@@ -88,6 +88,6 @@ dependencies:
 
 ## 📝 License
 
-This project is licensed under the MIT License - see the [Chhery Chorn](LICENSE) file for details.
+This project is licensed under the PSU License - see the [Chhery Chorn](LICENSE) file for details.
 
 ---

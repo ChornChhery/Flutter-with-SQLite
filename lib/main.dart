@@ -5,7 +5,12 @@ import 'detail_page.dart';
 
 void main() {
   runApp(MaterialApp(
+    theme: ThemeData(
+      useMaterial3: true,
+      colorSchemeSeed: Colors.deepPurple,
+    ),
     home: UserForm(),
+    debugShowCheckedModeBanner: false,
   ));
 }
 
@@ -30,7 +35,7 @@ class _UserFormState extends State<UserForm> {
       await DatabaseHelper().insertUser(user);
 
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('User added successfully')),
+        SnackBar(content: Text('✅ User added successfully')),
       );
 
       _nameController.clear();
@@ -41,21 +46,26 @@ class _UserFormState extends State<UserForm> {
     }
   }
 
-  Widget _buildGenderRadio(String label, int value) {
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Radio<int>(
-          value: value,
-          groupValue: _selectedSex,
-          onChanged: (val) {
-            setState(() {
-              _selectedSex = val!;
-            });
-          },
+  Widget _buildGenderRadio(String label, int value, IconData icon) {
+    return Expanded(
+      child: InkWell(
+        onTap: () => setState(() => _selectedSex = value),
+        child: Card(
+          elevation: 2,
+          color: _selectedSex == value ? Colors.deepPurple[50] : null,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 12),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(icon, color: Colors.deepPurple),
+                Text(label, style: TextStyle(fontSize: 16)),
+              ],
+            ),
+          ),
         ),
-        Text(label),
-      ],
+      ),
     );
   }
 
@@ -63,10 +73,11 @@ class _UserFormState extends State<UserForm> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Add User'),
+        title: Text('👤 Add New User'),
         actions: [
           IconButton(
             icon: Icon(Icons.list),
+            tooltip: 'View Users',
             onPressed: () {
               Navigator.push(
                 context,
@@ -76,35 +87,59 @@ class _UserFormState extends State<UserForm> {
           )
         ],
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16),
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.all(20),
         child: Form(
           key: _formKey,
           child: Column(
             children: [
+              Text(
+                "User Information",
+                style: Theme.of(context).textTheme.headlineSmall,
+              ),
+              SizedBox(height: 20),
               TextFormField(
                 controller: _nameController,
-                decoration: InputDecoration(labelText: 'Name'),
+                decoration: InputDecoration(
+                  labelText: 'Full Name',
+                  border: OutlineInputBorder(),
+                  prefixIcon: Icon(Icons.person),
+                ),
                 validator: (val) => val!.isEmpty ? 'Enter name' : null,
               ),
+              SizedBox(height: 16),
               TextFormField(
                 controller: _salaryController,
-                decoration: InputDecoration(labelText: 'Salary'),
+                decoration: InputDecoration(
+                  labelText: 'Salary',
+                  border: OutlineInputBorder(),
+                  prefixIcon: Icon(Icons.attach_money),
+                ),
                 keyboardType: TextInputType.number,
                 validator: (val) => val!.isEmpty ? 'Enter salary' : null,
               ),
               SizedBox(height: 16),
               Row(
                 children: [
-                  Text("Gender: "),
-                  _buildGenderRadio('Male', 0),
-                  _buildGenderRadio('Female', 1),
+                  Text("Gender:", style: TextStyle(fontWeight: FontWeight.bold)),
                 ],
               ),
-              SizedBox(height: 20),
-              ElevatedButton(
+              SizedBox(height: 8),
+              Row(
+                children: [
+                  _buildGenderRadio("Male", 0, Icons.male),
+                  SizedBox(width: 10),
+                  _buildGenderRadio("Female", 1, Icons.female),
+                ],
+              ),
+              SizedBox(height: 24),
+              ElevatedButton.icon(
+                icon: Icon(Icons.save),
+                label: Text('Submit'),
                 onPressed: _submitData,
-                child: Text('Submit'),
+                style: ElevatedButton.styleFrom(
+                  minimumSize: Size.fromHeight(50),
+                ),
               )
             ],
           ),
